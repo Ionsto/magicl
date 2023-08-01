@@ -15,7 +15,9 @@
   :depends-on (#:magicl/core
                #:magicl/ext
                #:magicl/ext-blas
-               #:magicl/ext-lapack))
+               #:magicl/ext-lapack
+               #:magicl/ext-simd
+               ))
 
 (asdf:defsystem #:magicl/core
   :license "BSD 3-Clause (See LICENSE.txt)"
@@ -29,6 +31,7 @@
                #:interface              ; for CALLING-FORM
                #:static-vectors
                #:trivial-garbage
+               #:fast-generic-functions
                )
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))
@@ -211,3 +214,28 @@
    (:file #+allegro "src/bindings/allegro/expokit-cffi"
           #-allegro "src/bindings/expokit-cffi")
    (:file "src/extensions/expokit/expm")))
+
+(asdf:defsystem #:magicl/ext-simd
+  :description "SBCL simd routines in MAGICL."
+  :depends-on (#:sb-simd
+               #:magicl/core
+               #:magicl/ext
+               ;#:3d-vectors
+               )
+  :serial t
+  :pathname "src/"
+  :components
+  ((:file "extensions/simd/package")
+   (:file "extensions/simd/arithmetic")))
+
+(asdf:defsystem #:magicl/seal
+  :description "Fast method sealing for MAGICL."
+  :depends-on (#:magicl/core
+               #:magicl/ext
+               #:fast-generic-functions
+               )
+  :serial t
+  :pathname "src/"
+  :components
+  ((:file "src/high-level/seal")
+   ))

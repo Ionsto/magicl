@@ -38,6 +38,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
         (copy-sym (intern (format nil "COPY-~:@(~A~)" name)))
         (storage-sym (intern (format nil "~:@(~A~)-STORAGE" name))))
     `(progn
+       (declaim (inline ,constructor-sym))
        (defstruct (,name (:include matrix)
                          (:constructor ,constructor-sym
                              (nrows ncols size layout storage))
@@ -55,6 +56,12 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (defmethod element-type ((m ,name))
          (declare (ignore m))
          ',type)
+
+       (defmethod make-load-form ((m ,name) &optional environment)
+         (declare (ignore environment))
+         (make-load-form-saving-slots m)
+         ;`(make-instance ',name :storage ,(matrix-storage m) )
+         )
 
        (defmethod make-tensor ((class (eql ',name)) shape &key initial-element layout storage)
          (declare (type list shape)
@@ -118,8 +125,9 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
              (setf (aref (,storage-sym new-m) i)
                    (aref (,storage-sym m) i)))
            new-m))
-       
+
        (defmethod tref ((matrix ,name) &rest pos)
+         (declare (method-properties inlineable))
          (declare (dynamic-extent pos)
                   (optimize (speed 3) (safety 1)))
          (let ((numrows (matrix-nrows matrix))
@@ -135,7 +143,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                               (:column-major (+ row (the fixnum (* col numrows)))))))
                  (declare (type alexandria:array-index index))
                  (aref (,storage-sym matrix) index))))))
-       
+
        (defmethod (setf tref) (new-value (matrix ,name) &rest pos)
          (declare (dynamic-extent pos)
                   (optimize (speed 3) (safety 1)))
@@ -663,3 +671,4 @@ NOTE: If H is not Hermitian, the behavior is undefined.")
                  :matrix A)))
       (let ((rmat (lu-solve lu ipiv bmat)))
         (from-storage (storage rmat) (shape b))))))
+

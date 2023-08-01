@@ -13,8 +13,23 @@
 
 ;;; abstract-tensor protocol
 ;;; These methods do not have generic definitions and must be implemented by subclasses
+;(defparameter *sealable-tensor-ops* '())
+(defmacro def-fast-generic (name lambda-list &rest args)
+  ;(push name *sealable-tensor-ops*)
+  (let ((method-body (cdr (assoc ':method args)))
+        (methodless-body (remove ':method args :test 'equal :key 'car)))
+    `(progn
+       (defgeneric ,name
+         ,lambda-list
+         (:generic-function-class fast-generic-functions:fast-generic-function)
+         ,@methodless-body
+         )
+       ,(when method-body
+          `(defmethod ,name ,@method-body)
+          ))))
 
 (defgeneric shape (tensor)
+  (:generic-function-class fast-generic-functions:fast-generic-function)
   (:documentation "The shape (dimensions) of the tensor. eg. '(2 3) for a 2x3 tensor"))
 
 (defgeneric tref (tensor &rest pos)

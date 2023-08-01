@@ -8,6 +8,9 @@
 
 (defmatrix matrix/double-float double-float tensor/double-float)
 
+;(defsubmatrix matrix-simd-2 double-float tensor/double-float matrix/double-float)
+;(defstruct (matrix-simd-2 (:include matrix/double-float)))
+
 (defvector vector/double-float double-float tensor/double-float)
 
 (defcompatible

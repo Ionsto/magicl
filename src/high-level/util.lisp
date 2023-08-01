@@ -108,8 +108,17 @@
          (doc-string (if (null doc-option)
                          nil
                          (second doc-option))))
-    `(progn
-       (define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))
-       (defgeneric ,fun-name-backend ,lambda-list ,@options)
-       (define-compatible-no-applicable-method-behavior ,fun-name-backend)
-       (define-backend-implementation ,fun-name ,backend ',fun-name-backend))))
+    (let ((method-body (cdr (assoc ':method options)))
+          (methodless-body (remove ':method options :test 'equal :key 'car)))
+      `(progn
+         (define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))
+         (defgeneric ,fun-name-backend
+           ,lambda-list
+           ,@methodless-body
+           )
+         ,(when method-body
+              `(defmethod ,fun-name-backend ,@method-body)
+              )
+         (define-compatible-no-applicable-method-behavior ,fun-name-backend)
+         (define-backend-implementation ,fun-name ,backend ',fun-name-backend)))))
+                                        ;(:generic-function-class fast-generic-functions:fast-generic-function)

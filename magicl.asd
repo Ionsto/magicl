@@ -31,7 +31,7 @@
                #:interface              ; for CALLING-FORM
                #:static-vectors
                #:trivial-garbage
-               #:fast-generic-functions
+               ;; #:fast-generic-functions
                )
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))

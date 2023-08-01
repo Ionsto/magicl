@@ -86,6 +86,7 @@ DEEP-COPY-TENSOR."))
                                      (deep-copy-tensor source1)
                                      source1))
                         (source2 (copy-to/w-same-layout source2 target)))
+                    (declare (,tensor-type source1 source2 target))
                     (,function
                      (magicl::size source2)
                      (coerce 1 ',scalar-type)

@@ -1,3 +1,4 @@
 **/*.dylib
 **/*.so
 .DS_Store
+*.fasl

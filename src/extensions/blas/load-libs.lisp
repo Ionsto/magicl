@@ -1,5 +1,9 @@
 (in-package #:magicl.foreign-libraries)
 
+#+:magicl.use-mkl (print "Loading MKL")
+#-:magicl.use-mkl (print "Loading BLAS")
+
+(print "Loading blas libraries")
 (cffi:define-foreign-library libblas
   #+:magicl.use-accelerate
   (:darwin "libBLAS.dylib" :search-path #P"/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/")
@@ -12,7 +16,10 @@
   (:unix  "libmkl_rt.so")
   #-:magicl.use-mkl
   (:unix  (:or "libblas.so"
-               "libblas.so.3"))
+               "libblas.so.3"
+               "libopenblas.so"
+               "libblis.so"
+               ))
   (t (:default "libblas")))
 
 (pushnew 'libblas *foreign-libraries*)

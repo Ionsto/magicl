@@ -1,5 +1,9 @@
 (in-package #:magicl.foreign-libraries)
 
+(print "Loading LAPACK")
+#+:magicl.use-mkl (print "Loading MKL imp")
+#-:magicl.use-mkl (print "Loading lapack imp")
+
 (cffi:define-foreign-library liblapack
   #+:magicl.use-accelerate
   (:darwin "libLAPACK.dylib" :search-path #P"/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/")
@@ -16,7 +20,10 @@
   (:unix  "libmkl_rt.so")
   #-:magicl.use-mkl
   (:unix  (:or "liblapack.so"
-               "liblapack.so.3"))
+               "liblapack.so.3"
+               "libopenblas.so"
+               "libflame.so"
+               ))
   (t (:default "liblapack")))
 
 (pushnew 'liblapack *foreign-libraries*)

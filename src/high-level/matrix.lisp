@@ -545,6 +545,12 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 (define-extensible-function (hermitian-eig hermitian-eig-lisp) (matrix)
   (:documentation "Like EIG, but specialized for Hermitian matrices."))
 
+
+(define-backend-function self-adjoint-eig (matrix)
+  "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)")
+;; (define-extensible-function (self-adjoint-eig self-adjoint-eig-lisp) (matrix)
+;;   (:documentation "Like EIG, but specialized for Self adjoint matrices, i.e. all real components."))
+
 (define-extensible-function (lu lu-lisp) (matrix)
   (:documentation
    "Get the LU decomposition of MATRIX. Results in two tensors LU and IPIV:

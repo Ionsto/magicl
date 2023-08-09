@@ -39,6 +39,10 @@
                               matrix-class type
                               (lapack-routine "geev")
                               real-type)
+                             (generate-lapack-self-adjoint-eig-for-type
+                              matrix-class type
+                              (lapack-routine "syev")
+                              real-type)
                              (generate-lapack-ql-qr-rq-lq-for-type
                               matrix-class type
                               (lapack-routine "geqlf") (lapack-routine "geqrf")

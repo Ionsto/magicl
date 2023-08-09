@@ -16,6 +16,7 @@
                           #:make-array)
   (:export
    #:lapack-eig
+   #:lapack-self-adjoint-eig
    #:lapack-lu
    #:lapack-csd
    #:lapack-svd

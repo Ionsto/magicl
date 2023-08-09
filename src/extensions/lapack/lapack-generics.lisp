@@ -13,6 +13,8 @@
 
 (magicl:define-extensible-function (magicl:hermitian-eig lapack-hermitian-eig :lapack) (matrix))
 
+(magicl:define-extensible-function (magicl:self-adjoint-eig lapack-self-adjoint-eig :lapack) (matrix))
+
 (magicl:define-extensible-function (magicl:lu lapack-lu :lapack) (matrix))
 
 (magicl:define-extensible-function (magicl:lu-solve lapack-lu-solve :lapack) (lu ipiv b))

@@ -16,7 +16,7 @@
                #:magicl/ext
                #:magicl/ext-blas
                #:magicl/ext-lapack
-               #:magicl/ext-simd
+               ;; #:magicl/ext-simd
                ))
 
 (asdf:defsystem #:magicl/core

@@ -51,6 +51,12 @@
              (sb-simd-avx:f64.2-aref b offset)
              ))
   (values))
+
+(declaim (ftype (function ((simple-array double-float)
+                           (simple-array double-float)
+                           (simple-array double-float)
+                           &key (offset fixnum)
+                           ) (values)) simd-add))
 (defun simd-add (a b target &key (offset 0))
   (declare (optimize (speed 3) (debug 0) (safety 0)))
   (declare (type sb-simd:f64vec a b target)
@@ -117,6 +123,27 @@
         (simd-add (magicl::storage source1) (magicl::storage source2) (magicl::storage target))
         target))
     ))
+(defun .+-simd (source1 source2
+                  &optional target)
+  (declare (magicl::matrix/double-float source1 source2))
+  (if target
+      (progn
+        (simd-add (magicl::storage source1) (magicl::storage source2) (magicl::storage target))
+        target)
+      (let ((target (deep-copy-tensor source1)))
+        (simd-add (magicl::storage source1) (magicl::storage source2) (magicl::storage target))
+        target)))
+
+(defun .+-unsafe (source1 source2
+                  &optional target)
+  (declare (magicl::matrix/double-float source1 source2))
+    (if target
+        (progn
+          (simd-add (magicl::storage source1) (magicl::storage source2) (magicl::storage target))
+          target)
+        (let ((target (deep-copy-tensor source1)))
+          (simd-add (magicl::storage source1) (magicl::storage source2) (magicl::storage target))
+          target)))
 
 (defmethod .*-simd ((source1 magicl::matrix/double-float)
                     (source2 magicl::matrix/double-float)

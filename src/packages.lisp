@@ -18,8 +18,7 @@
    #:define-backend-implementation))
 
 (defpackage #:magicl
-  (:use #:common-lisp
-        #:abstract-classes)
+  (:use #:common-lisp)
   (:shadow #:vector
            #:=
            #:map
@@ -45,6 +44,7 @@
   (:export #:with-blapack
            #:time-backends
            #:define-extensible-function ; For extensions, not users...
+           #:extend-function ; For extensions, not users...
 
            #:allocate-storage
            #:*default-allocator*
@@ -174,6 +174,7 @@
            #:inv
            #:lu
            #:lu-solve
+           #:svdls
            #:csd-blocks
            #:csd
            #:svd
@@ -187,6 +188,7 @@
            #:logm
            #:expih
            #:linear-solve
+           #:least-squares
 
            #:polynomial
            #:make-polynomial

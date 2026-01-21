@@ -108,17 +108,15 @@
          (doc-string (if (null doc-option)
                          nil
                          (second doc-option))))
-    (let ((method-body (cdr (assoc ':method options)))
-          (methodless-body (remove ':method options :test 'equal :key 'car)))
-      `(progn
-         (define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))
-         (defgeneric ,fun-name-backend
-           ,lambda-list
-           ,@methodless-body
-           )
-         ,(when method-body
-              `(defmethod ,fun-name-backend ,@method-body)
-              )
-         (define-compatible-no-applicable-method-behavior ,fun-name-backend)
-         (define-backend-implementation ,fun-name ,backend ',fun-name-backend)))))
-                                        ;(:generic-function-class fast-generic-functions:fast-generic-function)
+    `(progn
+       (define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))
+       (defgeneric ,fun-name-backend ,lambda-list ,@options)
+       (define-compatible-no-applicable-method-behavior ,fun-name-backend)
+       (define-backend-implementation ,fun-name ,backend ',fun-name-backend))))
+
+(defmacro extend-function ((fun-name fun-name-backend &optional (backend :lisp)) lambda-list &body options)
+  "This macro mimics DEFGENERIC, using FUN-NAME as the backend function whose BACKEND implementation (default :LISP) is a generic function named FUN-NAME-BACKEND."
+  `(progn
+       (defgeneric ,fun-name-backend ,lambda-list ,@options)
+       (define-compatible-no-applicable-method-behavior ,fun-name-backend)
+       (define-backend-implementation ,fun-name ,backend ',fun-name-backend)))

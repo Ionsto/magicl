@@ -15,9 +15,7 @@
   :depends-on (#:magicl/core
                #:magicl/ext
                #:magicl/ext-blas
-               #:magicl/ext-lapack
-               ;; #:magicl/ext-simd
-               ))
+               #:magicl/ext-lapack))
 
 (asdf:defsystem #:magicl/core
   :license "BSD 3-Clause (See LICENSE.txt)"
@@ -26,12 +24,10 @@
   :author "Rigetti Computing"
   :version (:read-file-form "VERSION.txt")
   :depends-on (#:alexandria
-               #:abstract-classes
                #:policy-cond
                #:interface              ; for CALLING-FORM
                #:static-vectors
                #:trivial-garbage
-               ;; #:fast-generic-functions
                )
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))
@@ -51,8 +47,8 @@
                  (:file "abstract-tensor")
                  (:file "specialize-tensor")
                  (:file "tensor")
+		 (:file "vector")
                  (:file "matrix")
-                 (:file "vector")
                  (:file "types/single-float")
                  (:file "types/double-float")
                  (:file "types/complex-single-float")
@@ -128,16 +124,15 @@
   ((:file "extensions/lapack/package")
    (:file "extensions/lapack/load-libs")
    (:module "bindings/allegro" :if-feature :allegro
-    :components #1=((:file "lapack00-cffi")
-                    (:file "lapack01-cffi")
-                    (:file "lapack02-cffi")
-                    (:file "lapack03-cffi")
-                    (:file "lapack04-cffi")
-                    (:file "lapack05-cffi")
-                    (:file "lapack06-cffi")
-                    (:file "lapack07-cffi")))
+    :components ((:file "lapack00-cffi")
+                 (:file "lapack02-cffi")
+                 (:file "lapack03-cffi")
+                 (:file "lapack04-cffi")
+                 (:file "lapack05-cffi")
+                 (:file "lapack06-cffi")
+                 (:file "lapack07-cffi")))
    (:module "bindings" :if-feature (:not :allegro)
-    :components #1#)
+    :components ((:file "lapack-cffi")))
    (:module "extensions/lapack"
     :components ((:file "lapack-generics")
                  (:file "lapack-templates")
@@ -214,28 +209,3 @@
    (:file #+allegro "src/bindings/allegro/expokit-cffi"
           #-allegro "src/bindings/expokit-cffi")
    (:file "src/extensions/expokit/expm")))
-
-(asdf:defsystem #:magicl/ext-simd
-  :description "SBCL simd routines in MAGICL."
-  :depends-on (#:sb-simd
-               #:magicl/core
-               #:magicl/ext
-               ;#:3d-vectors
-               )
-  :serial t
-  :pathname "src/"
-  :components
-  ((:file "extensions/simd/package")
-   (:file "extensions/simd/arithmetic")))
-
-(asdf:defsystem #:magicl/seal
-  :description "Fast method sealing for MAGICL."
-  :depends-on (#:magicl/core
-               #:magicl/ext
-               #:fast-generic-functions
-               )
-  :serial t
-  :pathname "src/"
-  :components
-  ((:file "src/high-level/seal")
-   ))

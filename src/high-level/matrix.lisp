@@ -38,6 +38,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
         (copy-sym (intern (format nil "COPY-~:@(~A~)" name)))
         (storage-sym (intern (format nil "~:@(~A~)-STORAGE" name))))
     `(progn
+       (declaim (inline ,constructor-sym))
        (defstruct (,name (:include matrix)
                          (:constructor ,constructor-sym
                              (nrows ncols size layout storage))
@@ -45,6 +46,10 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          (storage nil :type (matrix-storage ,type)))
        #+sbcl (declaim (sb-ext:freeze-type ,name))
        #+allegro (set-pprint-dispatch ',name 'pprint-matrix)
+
+       (defmethod make-load-form ((m ,name) &optional environment)
+         (declare (ignore environment))
+         (make-load-form-saving-slots m))
 
        (defmethod storage ((m ,name))
          (,storage-sym m))
@@ -550,6 +555,9 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 
 (define-extensible-function (hermitian-eig hermitian-eig-lisp) (matrix)
   (:documentation "Like EIG, but specialized for Hermitian matrices."))
+
+(define-extensible-function (self-adjoint-eig self-adjoint-eig-lisp) (matrix)
+  (:documentation "Like EIG, but specialized for self-adjoint matrices."))
 
 (define-extensible-function (lu lu-lisp) (matrix)
   (:documentation

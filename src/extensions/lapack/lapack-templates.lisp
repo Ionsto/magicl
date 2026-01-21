@@ -416,6 +416,32 @@
            (,eig-function jobz uplo n a lda w work lwork rwork info)
            (values (coerce w 'list) a-tensor))))))
 
+(defun generate-lapack-self-adjoint-eig-for-type (class type eig-function real-type)
+  `(defmethod lapack-self-adjoint-eig ((m ,class))
+     (policy-cond:with-expectations (> speed safety)
+         ((assertion (square-matrix-p m))
+          ;(assertion (hermitian-matrix-p m))
+          )
+       (let ((rows (nrows m))
+             (a-tensor (deep-copy-tensor m)))
+         (when (eql :row-major (layout m)) (transpose! a-tensor))
+         (let ((jobz "V")
+               (uplo "U")
+               (n rows)
+               (a (magicl::storage a-tensor))
+               (lda rows)
+               (w (make-array rows :element-type ',type))
+               (work (make-array 1 :element-type ',type))
+               (lwork -1)
+               (info 0))
+           ;; run it once as a workspace query
+           (,eig-function jobz uplo n a lda w work lwork info)
+           (setf lwork (truncate (realpart (row-major-aref work 0))))
+           (setf work (make-array (max 1 lwork) :element-type ',type))
+           ;; run it again with optimal workspace size
+           (,eig-function jobz uplo n a lda w work lwork info)
+           (values (coerce w 'list) a-tensor))))))
+
 ;; TODO: implement row-major checks in these functions
 (defun generate-lapack-ql-qr-rq-lq-for-type (class type
                                              ql-function qr-function rq-function lq-function

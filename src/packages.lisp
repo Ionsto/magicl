@@ -169,6 +169,7 @@
            #:dagger
            #:dagger!
            #:eig
+           #:self-adjoint-eig
            #:hermitian-eig
            #:inv
            #:lu
